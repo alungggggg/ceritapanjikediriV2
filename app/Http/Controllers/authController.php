@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Tymon\JWTAuth\JWT;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class authController extends Controller
 {
@@ -90,12 +92,47 @@ class authController extends Controller
         }
     }
 
-    public function login(){
+    public function login(Request $request){
+        try{
+            $usernameOrEmail = $request->credential;
+            $password = $request->password;
+            $user = User::where('username', $usernameOrEmail)->orWhere('email', $usernameOrEmail)->first();
+            if(!$user){
+                return response()->json(["status" => false, "message" => "Cresential Is incorrect"], 422);
+            }
 
+            if(!password_verify($password, $user->password)){
+                return response()->json(["status" => false, "message" => "Cresential Is incorrect"], 422);
+            }
+
+            if(!$user->isActive != 1){
+                return response()->json(["status" => false, "message" => "Your account is not active"], 422);
+            }
+
+            $payload = [
+                "id" => $user->id,
+                "role" => $user->role,
+                "refreshToken" => $user->refreshToken,
+            ];
+
+            return response()->json(["data" => [
+                "id" => $payload["id"], "status" => true,], "token"]
+            , 200);
+
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Internal Server Error: ' . $e->getMessage() ,
+            ], 500);
+        }
     }
 
-    public function getAccessToken(){
-
+    public function getAccessToken($user){  
+        $payload = [
+            'id' => $user->id,
+            'exp' => time() + 60 * 60,
+        ];
+        $token = JWTAuth::fromUser($user, $payload);
+        return $token;
     }
 
     public function getRefreshToken($id){

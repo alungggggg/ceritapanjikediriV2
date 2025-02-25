@@ -1,16 +1,19 @@
 <?php
 
-use App\Http\Controllers\authController;
+use App\Mail\WelcomeMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\authController;
+use App\Http\Controllers\newsController;
+use App\Http\Controllers\quizController;
 use App\Http\Controllers\userController;
-use App\Http\Controllers\dongengController;
 use App\Http\Controllers\forumController;
 use App\Http\Controllers\pilganController;
-use App\Http\Controllers\quizController;
+use App\Http\Controllers\dongengController;
+use App\Http\Controllers\visitedController;
 use App\Http\Controllers\UraianPanjangController;
 use App\Http\Controllers\uraianSingkatController;
-use App\Http\Controllers\visitedController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +48,12 @@ Route::get('/users', [userController::class, 'getUser']);
 Route::post('/users', [userController::class, 'createUser']);
 Route::patch('/users/{id}', [userController::class, 'updateUser']);
 Route::delete('/users/{id}', [userController::class, 'deleteUser']);
+
+// news
+Route::post('/news', [newsController::class, 'store']);
+Route::get('/news', [newsController::class, 'index']);
+Route::patch('/news', [newsController::class, 'update']);
+Route::delete('/news', [newsController::class, 'destroy']);
 
 // auth
 Route::post('/login', [authController::class, 'login']); //x
@@ -96,3 +105,11 @@ Route::get('/visited/get', [visitedController::class, 'getAllVisited']);
 
 Route::get('/history/{id}', [UraianPanjangController::class, 'getSoalUraianPanjang']);
 Route::post('/history/update', [UraianPanjangController::class, 'getSoalUraianPanjang']);
+
+
+// Route::get('/test', function(){
+//     Mail::to('aldinoalungputraanugraha@gmail.com')->send(new WelcomeMail('John Doe'));
+// });
+Route::get('/yuser', function(Request $request){
+    return $request->user();
+})->middleware('auth:sanctum');
