@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Tymon\JWTAuth\JWT;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
 
 class authController extends Controller
 {
@@ -56,8 +59,36 @@ class authController extends Controller
         }
     }
 
-    public function register(){
-        
+    public function register(Request $request){
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required|string',
+            'username' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string',
+            'confirm_password' => 'required|same:password',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $credential = $request->all();
+        $credential['password'] = Hash::make($credential['password']);
+        $credential['refreshToken'] = "";
+        $credential['originalPass'] = "";
+        $user = User::create($credential);
+
+        $success['token'] = $user->createToken('auth_token')->plainTextToken;
+        $success['id'] = $user->id;
+        $success['name'] = $user->nama;
+
+        return response()->json([
+            'success' => true,
+            "data" => $success
+        ], 200);
     }
 
     public function forgotPasswordSend(){
@@ -93,37 +124,22 @@ class authController extends Controller
     }
 
     public function login(Request $request){
-        try{
-            $usernameOrEmail = $request->credential;
-            $password = $request->password;
-            $user = User::where('username', $usernameOrEmail)->orWhere('email', $usernameOrEmail)->first();
-            if(!$user){
-                return response()->json(["status" => false, "message" => "Cresential Is incorrect"], 422);
-            }
+        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
+            $auth = Auth::user();
+            $success['token']   = $auth->createToken('auth_token',['*'],now()->addDay() )->plainTextToken;
+            $success['id'] = $auth->id;
+            $success['name'] = $auth->nama;
 
-            if(!password_verify($password, $user->password)){
-                return response()->json(["status" => false, "message" => "Cresential Is incorrect"], 422);
-            }
-
-            if(!$user->isActive != 1){
-                return response()->json(["status" => false, "message" => "Your account is not active"], 422);
-            }
-
-            $payload = [
-                "id" => $user->id,
-                "role" => $user->role,
-                "refreshToken" => $user->refreshToken,
-            ];
-
-            return response()->json(["data" => [
-                "id" => $payload["id"], "status" => true,], "token"]
-            , 200);
-
-        }catch(\Exception $e){
             return response()->json([
-                'message' => 'Internal Server Error: ' . $e->getMessage() ,
-            ], 500);
+                'success' => true,
+                'message' => "login sukses",
+                'data' => $success
+            ], 200);
         }
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized'
+        ], 401);
     }
 
     public function getAccessToken($user){  
@@ -146,8 +162,9 @@ class authController extends Controller
         }
     }
 
-    public function logout(){
-        return response()->json(["status" => true], 200);
+    public function logout(Request $request){
+        Auth::user()->tokens()->delete();
+        // return response()->json(["status" => true], 200);
     }
 
     public function authenticationToken(){

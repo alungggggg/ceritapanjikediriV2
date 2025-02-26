@@ -30,7 +30,7 @@ use App\Http\Controllers\uraianSingkatController;
 
 // crud dongeng
 Route::post('/dongeng', [dongengController::class, 'createDongeng']);
-Route::get('/dongeng', [dongengController::class, 'getDongeng']);
+Route::get('/dongeng', [dongengController::class, 'getDongeng'])->middleware('auth:sanctum');
 Route::get('/dongeng/{id}', [dongengController::class, 'getDongengById']);
 Route::patch('/dongeng/{id}', [dongengController::class, 'updateDongeng']);
 Route::delete('/dongeng/{id}', [dongengController::class, 'deleteDongeng']);
@@ -51,13 +51,13 @@ Route::delete('/users/{id}', [userController::class, 'deleteUser']);
 
 // news
 Route::post('/news', [newsController::class, 'store']);
-Route::get('/news', [newsController::class, 'index']);
+Route::get('/news', [newsController::class, 'index'])->name("news");
 Route::patch('/news', [newsController::class, 'update']);
 Route::delete('/news', [newsController::class, 'destroy']);
 
 // auth
-Route::post('/login', [authController::class, 'login']); //x
-Route::post('/logout', [authController::class, 'logout']);
+Route::post('/login', [authController::class, 'login']); 
+Route::post('/logout', [authController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/register', [authController::class, 'register']); //x
 Route::get('/auth/alreadyexist/email', [authController::class, 'isAvailableEmail']);
 Route::get('/auth/alreadyexist/username', [authController::class, 'isAvailableUsername']);
