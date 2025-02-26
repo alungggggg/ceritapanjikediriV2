@@ -44,7 +44,7 @@ class newsController extends Controller
         }    
     }
 
-    public function index(Request $request)
+    public function index()
     {
         try {
             $data = newsModel::all();
@@ -56,9 +56,9 @@ class newsController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $data = newsModel::find($id);
+        $data = newsModel::find($request->id);
         if(!$data){
             return response()->json(["message" => "news tidak tersedia!"], 404);
         }
