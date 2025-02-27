@@ -153,12 +153,12 @@ class authController extends Controller
     public function login(Request $request){
         $credentials = $request->only('credential', 'password');
         $fieldType = filter_var($credentials['credential'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        // return Auth::attempt([$fieldType => $request->credential, 'password' => $request->password]);
         if(Auth::attempt([$fieldType => $request->credential, 'password' => $request->password])){
             $auth = Auth::user();
             $success['token']   = $auth->createToken('auth_token',['*'],now()->addDay() )->plainTextToken;
             $success['id'] = $auth->id;
             $success['name'] = $auth->nama;
+            $success['email_verified_at'] = $auth->email_verified_at;
 
             return response()->json([
                 'success' => true,
