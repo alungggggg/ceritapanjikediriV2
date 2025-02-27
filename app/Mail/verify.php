@@ -26,7 +26,7 @@ class Verify extends Mailable
             ->view('emails.verify')
             ->with([
                 'user' => $this->user,
-                'link' => 'http//localhost:5173/#/verify/' + encrypt($this->user->id)
+                'link' => 'http://localhost:5173/#/verify/' . encrypt($this->user->id)
             ]);
     }
 }
