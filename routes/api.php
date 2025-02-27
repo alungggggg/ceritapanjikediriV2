@@ -28,32 +28,20 @@ use App\Http\Controllers\uraianSingkatController;
 
 
 
-// crud dongeng
-Route::post('/dongeng', [dongengController::class, 'createDongeng']);
-Route::get('/dongeng', [dongengController::class, 'getDongeng'])->middleware('auth:sanctum');
+// dongeng
+Route::get('/dongeng', [dongengController::class, 'getDongeng']);
 Route::get('/dongeng/{id}', [dongengController::class, 'getDongengById']);
-Route::patch('/dongeng/{id}', [dongengController::class, 'updateDongeng']);
-Route::delete('/dongeng/{id}', [dongengController::class, 'deleteDongeng']);
+
 
 Route::get('/popular', [dongengController::class, 'popularView']);
 Route::get('/dongengview/{id}', [dongengController::class, 'sumView']);
 Route::get('/count/dongeng', [dongengController::class, 'countDongeng']);
 Route::get('/count/view', [dongengController::class, 'countAllView']);
 
-// user
-Route::get('/profile/{token}', [userController::class, 'profile']); //x
-Route::get('/profile/update/{token}', [userController::class, 'profile']); //x
-Route::get('/users/{id}', [userController::class, 'getUserByID']);
-Route::get('/users', [userController::class, 'getUser']);
-Route::post('/users', [userController::class, 'createUser']);
-Route::patch('/users/{id}', [userController::class, 'updateUser']);
-Route::delete('/users/{id}', [userController::class, 'deleteUser']);
+
 
 // news
-Route::post('/news', [newsController::class, 'store']);
-Route::get('/news', [newsController::class, 'index'])->name("news");
-Route::patch('/news', [newsController::class, 'update']);
-Route::delete('/news', [newsController::class, 'destroy']);
+Route::get('/news', [newsController::class, 'index']);
 
 // auth
 Route::post('/login', [authController::class, 'login']); 
@@ -68,37 +56,66 @@ Route::post('/refresh-token', [authController::class, 'forgotPasswordForm']); //
 Route::get('/isvalidtoken/{token}', [authController::class, 'forgotPasswordForm']); //x
 Route::get('/verify', [authController::class, 'forgotPasswordForm']); //x
 
-// pilgan
-Route::post('/set-soal-pilgan', [pilganController::class, 'createSoalPilgan']);
-Route::get('/get-soal-pilgan', [pilganController::class, 'getSoalPilgan']);
-Route::delete('/delete-soal-pilgan/{id}', [pilganController::class, 'deleteSoalPilgan']);
-Route::patch('/update-soal-pilgan/{id}', [pilganController::class, 'updateSoalPilgan']);
 
-// uraian singkat
-Route::get('/get-soal-uraian-singkat', [uraianSingkatController::class, 'getSoalUraianSingkat']);
-Route::post('/set-soal-uraian-singkat', [uraianSingkatController::class, 'createSoalUraianSingkat']);
-Route::delete('/delete-soal-uraian-singkat/{id}', [uraianSingkatController::class, 'deleteSoalUraianSingkat']);
-Route::patch('/update-soal-uraian-singkat/{id}', [uraianSingkatController::class, 'updateSoalUraianSingkat']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    
+    // dongeng
+    Route::post('/dongeng', [dongengController::class, 'createDongeng'])->middleware('auth:sanctum');
+    Route::patch('/dongeng/{id}', [dongengController::class, 'updateDongeng'])->middleware('auth:sanctum');
+    Route::delete('/dongeng/{id}', [dongengController::class, 'deleteDongeng'])->middleware('auth:sanctum');
 
-// uraian panjang
-Route::get('/get-soal-uraian-panjang', [UraianPanjangController::class, 'getSoalUraianPanjang']);
-Route::post('/set-soal-uraian-panjang', [UraianPanjangController::class, 'createSoalUraianPanjang']);
-Route::delete('/delete-soal-uraian-panjang/{id}', [UraianPanjangController::class, 'deleteSoalUraianPanjang']);
-Route::patch('/update-soal-uraian-panjang/{id}', [UraianPanjangController::class, 'updateSoalUraianPanjang']);
+    // user
+    Route::get('/profile', [userController::class, 'profile'])->middleware('auth:sanctum');
+    Route::get('/profile/update/{id}', [userController::class, 'updateProfile'])->middleware('auth:sanctum');
+    Route::get('/users/{id}', [userController::class, 'getUserByID'])->middleware('auth:sanctum');; // admin
+    Route::get('/users', [userController::class, 'getUser'])->middleware('auth:sanctum');;
+    Route::post('/users', [userController::class, 'createUser'])->middleware('auth:sanctum');
+    Route::patch('/users/{id}', [userController::class, 'updateUser'])->middleware('auth:sanctum');
+    Route::delete('/users/{id}', [userController::class, 'deleteUser'])->middleware('auth:sanctum');
 
-// quiz
-Route::get('/get-all-quiz', [quizController::class, 'getAllQuiz']);
-Route::post('/create-quiz', [quizController::class, 'createQuiz']);
-Route::delete('/delete-quiz/{id}', [quizController::class, 'deleteQuiz']);
-Route::patch('/update-quiz/{id}', [quizController::class, 'updateQuiz']);
-Route::get('/get-quiz/{id}', [quizController::class, 'getQuizById']);
+    // news
+    Route::post('/news', [newsController::class, 'store'])->middleware('auth:sanctum');
+    Route::patch('/news', [newsController::class, 'update'])->middleware('auth:sanctum'); // admin
+    Route::delete('/news', [newsController::class, 'destroy'])->middleware('auth:sanctum'); // admin
+
+    // pilgan
+    Route::post('/set-soal-pilgan', [pilganController::class, 'createSoalPilgan']);
+    Route::get('/get-soal-pilgan', [pilganController::class, 'getSoalPilgan']);
+    Route::delete('/delete-soal-pilgan/{id}', [pilganController::class, 'deleteSoalPilgan']);
+    Route::patch('/update-soal-pilgan/{id}', [pilganController::class, 'updateSoalPilgan']);
+
+    // uraian singkat
+    Route::get('/get-soal-uraian-singkat', [uraianSingkatController::class, 'getSoalUraianSingkat']);
+    Route::post('/set-soal-uraian-singkat', [uraianSingkatController::class, 'createSoalUraianSingkat']);
+    Route::delete('/delete-soal-uraian-singkat/{id}', [uraianSingkatController::class, 'deleteSoalUraianSingkat']);
+    Route::patch('/update-soal-uraian-singkat/{id}', [uraianSingkatController::class, 'updateSoalUraianSingkat']);
+
+    // uraian panjang
+    Route::get('/get-soal-uraian-panjang', [UraianPanjangController::class, 'getSoalUraianPanjang']);
+    Route::post('/set-soal-uraian-panjang', [UraianPanjangController::class, 'createSoalUraianPanjang']);
+    Route::delete('/delete-soal-uraian-panjang/{id}', [UraianPanjangController::class, 'deleteSoalUraianPanjang']);
+    Route::patch('/update-soal-uraian-panjang/{id}', [UraianPanjangController::class, 'updateSoalUraianPanjang']);
+
+    // quiz
+    Route::get('/get-all-quiz', [quizController::class, 'getAllQuiz']);
+    Route::post('/create-quiz', [quizController::class, 'createQuiz']);
+    Route::delete('/delete-quiz/{id}', [quizController::class, 'deleteQuiz']);
+    Route::patch('/update-quiz/{id}', [quizController::class, 'updateQuiz']);
+    Route::get('/get-quiz/{id}', [quizController::class, 'getQuizById']);
+
+    // forum
+    Route::post('/join-forum', [forumController::class, 'joinForumByToken']);
+    Route::post('/update-nilai-quiz', [forumController::class, 'updateNilaiQuiz']);
+    Route::get('/get-forum-by-userid/{id_user}', [forumController::class, 'getQuizByUserId']);
+    Route::get('/get-rekap-quiz/{id}', [forumController::class, 'getRekapById']);
+
+});
+
+
 
 // forum
 Route::get('/get-rekap/{id_forum}', [forumController::class, 'getRekapByForumId']);
-Route::post('/join-forum', [forumController::class, 'joinForumByToken']);
-Route::post('/update-nilai-quiz', [forumController::class, 'updateNilaiQuiz']);
-Route::get('/get-forum-by-userid/{id_user}', [forumController::class, 'getQuizByUserId']);
-Route::get('/get-rekap-quiz/{id}', [forumController::class, 'getRekapById']);
+
 
 Route::get('/visited', [visitedController::class, 'newVisited']);
 Route::get('/visited/get', [visitedController::class, 'getAllVisited']);

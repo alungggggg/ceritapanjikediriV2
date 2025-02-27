@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -95,6 +96,20 @@ class userController extends Controller
 
     public function profile()
     {
-        // jwt
+        $user = Auth::user();
+        return response()->json($user, 200);
+    }
+
+    public function updateProfile(Request $request, $id){
+        try{
+            User::find($id)
+            ->update($request);
+            return response()->json([ "message" => 'berhasil mengupdate Profile'], 200);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Internal Server Error: ' . $e->getMessage() ,
+            ], 500);
+        }
+
     }
 }

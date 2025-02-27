@@ -124,7 +124,10 @@ class authController extends Controller
     }
 
     public function login(Request $request){
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
+        $credentials = $request->only('credential', 'password');
+        $fieldType = filter_var($credentials['credential'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        // return Auth::attempt([$fieldType => $request->credential, 'password' => $request->password]);
+        if(Auth::attempt([$fieldType => $request->credential, 'password' => $request->password])){
             $auth = Auth::user();
             $success['token']   = $auth->createToken('auth_token',['*'],now()->addDay() )->plainTextToken;
             $success['id'] = $auth->id;
@@ -164,7 +167,7 @@ class authController extends Controller
 
     public function logout(Request $request){
         Auth::user()->tokens()->delete();
-        // return response()->json(["status" => true], 200);
+        return response()->json(["status" => true], 200);
     }
 
     public function authenticationToken(){
