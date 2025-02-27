@@ -61,7 +61,7 @@
             <p>Halo {{ $user->nama }},</p>
             <p>Selamat datang di dunia penuh keajaiban! ✨ Untuk memulai petualangan Anda menjelajahi dongeng-dongeng ajaib, silakan verifikasi akun Anda dengan mengklik tombol di bawah ini:</p>
             <p>
-                <a href={{"http://localhost:5173/verify/"  + encrypt($user->id) }} class="button">Verifikasi Email</a>
+                <a href={{"http://localhost:5173/#/verify/"  + encrypt($user->id) }} class="button">Verifikasi Email</a>
             </p>
             <p>Jika Anda tidak mendaftarkan akun di Cerita Panji Kediri, silakan abaikan email ini. Selamat membaca dan selamat berpetualang! 🌠</p>
 
