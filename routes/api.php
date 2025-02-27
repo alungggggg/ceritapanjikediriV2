@@ -56,6 +56,7 @@ Route::get('/auth/email', [authController::class, 'checkEmail']);
 
 Route::post('/forgot-password', [authController::class, 'forgotPasswordSend']); // x
 Route::post('/forgot-password/{token}', [authController::class, 'forgotPasswordForm']); // x
+
 Route::post('/refresh-token', [authController::class, 'forgotPasswordForm']); // x
 Route::get('/isvalidtoken/{token}', [authController::class, 'forgotPasswordForm']); //x
 Route::get('/verify', [authController::class, 'forgotPasswordForm']); //x

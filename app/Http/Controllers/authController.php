@@ -117,6 +117,7 @@ class authController extends Controller
         $user = User::where("email", $request->email)->first();
         if($user){
             Mail::to($user->email)->send(new forgotPassword($user));
+            return response()->json(['success' => false, "message" => "Email berhasil dikirim"]); 
         }
         return response()->json(['success' => false, "message" => "Email tidak ditemukan"]);
 
