@@ -8,10 +8,22 @@ use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
+use App\Mail\verify;
+use Mail;
 
 class authController extends Controller
 {
+
+    public function accountVerify($token){
+        $id = decrypt($token);
+        $user = User::find($id);
+        $user->email_verified_at = now();
+        $user->save();
+        return response()->json([
+            "success" => "true",
+            "message" => "Berhasil verifikasi akun!"
+        ], 200);
+    }
     //
 
     public function updateProfile(Request $request, $id){
@@ -59,6 +71,10 @@ class authController extends Controller
         }
     }
 
+    public function emailVerify($to){
+        Mail::to($to)->send(new verify($to));
+    }
+
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string',
@@ -84,12 +100,16 @@ class authController extends Controller
         $success['token'] = $user->createToken('auth_token')->plainTextToken;
         $success['id'] = $user->id;
         $success['name'] = $user->nama;
-
+                
+        Mail::to($credential['email'])->send(new verify($user));
+        
         return response()->json([
             'success' => true,
             "data" => $success
         ], 200);
     }
+
+    
 
     public function forgotPasswordSend(){
 

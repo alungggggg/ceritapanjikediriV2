@@ -46,7 +46,10 @@ Route::get('/news', [newsController::class, 'index']);
 // auth
 Route::post('/login', [authController::class, 'login']); 
 Route::post('/logout', [authController::class, 'logout'])->middleware('auth:sanctum');
-Route::post('/register', [authController::class, 'register']); //x
+Route::post('/register', [authController::class, 'register']);
+Route::get('/account/verify/{token}', [authController::class, 'accountVerify']);
+
+
 Route::get('/auth/alreadyexist/email', [authController::class, 'isAvailableEmail']);
 Route::get('/auth/alreadyexist/username', [authController::class, 'isAvailableUsername']);
 Route::get('/auth/email', [authController::class, 'checkEmail']);
@@ -58,7 +61,7 @@ Route::get('/verify', [authController::class, 'forgotPasswordForm']); //x
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    
+
     // dongeng
     Route::post('/dongeng', [dongengController::class, 'createDongeng'])->middleware('auth:sanctum');
     Route::patch('/dongeng/{id}', [dongengController::class, 'updateDongeng'])->middleware('auth:sanctum');
