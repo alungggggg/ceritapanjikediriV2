@@ -44,9 +44,13 @@ class newsController extends Controller
         }    
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
+            if($request->id){
+                $data = newsModel::find($request->id);
+                return response()->json($data, 200);
+            }
             $data = newsModel::all();
             return response()->json($data, 200);
         } catch (\Exception $e) {
