@@ -9,6 +9,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\verify;
+use App\Mail\forgotPassword;
+use GuzzleHttp\Psr7\Message;
 use Mail;
 
 class authController extends Controller
@@ -111,7 +113,12 @@ class authController extends Controller
 
     
 
-    public function forgotPasswordSend(){
+    public function forgotPasswordSend(Request $request){
+        $user = User::where("email", $request->email)->first();
+        if($user){
+            Mail::to($user->email)->send(new forgotPassword($user));
+        }
+        return response()->json(['success' => false, "message" => "Email tidak ditemukan"]);
 
     }
 

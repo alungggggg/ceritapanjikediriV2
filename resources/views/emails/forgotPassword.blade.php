@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Email</title>
+    <title>Reset Kata Sandi</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,7 +35,7 @@
 
         .button {
             display: inline-block;
-            background: #007BFF;
+            background: #28a745;
             color: #ffffff;
             padding: 10px 20px;
             text-decoration: none;
@@ -55,17 +55,15 @@
 <body>
     <div class="container">
         <div class="header">
-            <h2>verifikasi</h2>
+            <h2>Reset Kata Sandi</h2>
         </div>
         <div class="content">
             <p>Halo {{ $user->nama }},</p>
-            <p>Selamat datang di dunia penuh keajaiban! ✨ Untuk memulai petualangan Anda menjelajahi dongeng-dongeng ajaib, silakan verifikasi akun Anda dengan mengklik tombol di bawah ini:</p>
+            <p>Kami menerima permintaan untuk mereset kata sandi akun Anda. Jika Anda ingin melanjutkan, silakan klik tombol di bawah ini:</p>
             <p>
-
-                <a href="{{ url('/verify/' . encrypt($user->id)) }}" class="button">Verifikasi Email</a>
+                <a href={{"http://localhost:5173/#/reset-password/" + encrypt($user->id) }} class="button">Reset Kata Sandi</a>
             </p>
-            <p>Jika Anda tidak mendaftarkan akun di Cerita Panji Kediri, silakan abaikan email ini. Selamat membaca dan selamat berpetualang! 🌠</p>
-
+            <p>Jika Anda tidak meminta reset ini, abaikan email ini. Demi keamanan akun Anda, jangan bagikan tautan ini kepada siapa pun.</p>
         </div>
         <div class="footer">
             <p>&copy; 2025 Nama Bisnis Anda. Semua Hak Dilindungi.</p>

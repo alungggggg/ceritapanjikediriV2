@@ -53,6 +53,7 @@ Route::get('/account/verify/{token}', [authController::class, 'accountVerify']);
 Route::get('/auth/alreadyexist/email', [authController::class, 'isAvailableEmail']);
 Route::get('/auth/alreadyexist/username', [authController::class, 'isAvailableUsername']);
 Route::get('/auth/email', [authController::class, 'checkEmail']);
+
 Route::post('/forgot-password', [authController::class, 'forgotPasswordSend']); // x
 Route::post('/forgot-password/{token}', [authController::class, 'forgotPasswordForm']); // x
 Route::post('/refresh-token', [authController::class, 'forgotPasswordForm']); // x
