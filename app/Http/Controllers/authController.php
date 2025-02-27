@@ -122,6 +122,15 @@ class authController extends Controller
 
     }
 
+    public function forgotPasswordForm($token, Request $request){
+        $id = decrypt($token);
+        $user = User::find($id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return response()->json(["success" => true, "message" => "password berhasil diganti"]);
+    }
+
     public function isAvailableEmail(Request $request){
         try{
             $user = User::where('email', $request->search)->first();
@@ -209,7 +218,5 @@ class authController extends Controller
 
     }
 
-    public function forgotPaswordForm(){
-
-    }
+    
 }

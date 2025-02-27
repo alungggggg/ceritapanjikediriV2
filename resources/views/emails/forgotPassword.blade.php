@@ -61,7 +61,7 @@
             <p>Halo {{ $user->nama }},</p>
             <p>Kami menerima permintaan untuk mereset kata sandi akun Anda. Jika Anda ingin melanjutkan, silakan klik tombol di bawah ini:</p>
             <p>
-                <a href={{"http://localhost:5173/#/reset-password/" + encrypt($user->id) }} class="button">Reset Kata Sandi</a>
+                <a href="{{ $link }}" class="button">Reset Kata Sandi</a>
             </p>
             <p>Jika Anda tidak meminta reset ini, abaikan email ini. Demi keamanan akun Anda, jangan bagikan tautan ini kepada siapa pun.</p>
         </div>
