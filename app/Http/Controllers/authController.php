@@ -126,6 +126,7 @@ class authController extends Controller
     public function forgotPasswordForm($token, Request $request){
         $id = decrypt($token);
         $user = User::find($id);
+        
         $user->password = Hash::make($request->password);
         $user->save();
 

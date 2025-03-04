@@ -25,7 +25,7 @@ class forgotPassword extends Mailable
             ->view('emails.forgotPassword')
             ->with([
                 'user' => $this->user,
-                'link' => "http://localhost:5173/#/forgot-password/" . encrypt($this->user->id)
+                'link' => "https://ceritapanjikediri.my.id/#/forgot-password/" . encrypt($this->user->id)
             ]);
     }
 }
