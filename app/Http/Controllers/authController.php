@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Mail;
+use App\Mail\verify;
 use App\Models\User;
+use App\Mail\forgotPassword;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Mail\verify;
-use App\Mail\forgotPassword;
-use GuzzleHttp\Psr7\Message;
-use Mail;
 
 class authController extends Controller
 {
-
     public function accountVerify($token){
         $id = decrypt($token);
         $user = User::find($id);

@@ -11,6 +11,7 @@ use App\Http\Controllers\userController;
 use App\Http\Controllers\forumController;
 use App\Http\Controllers\pilganController;
 use App\Http\Controllers\dongengController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\visitedController;
 use App\Http\Controllers\UraianPanjangController;
 use App\Http\Controllers\uraianSingkatController;
@@ -114,6 +115,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/get-forum-by-userid/{id_user}', [forumController::class, 'getQuizByUserId']);
     Route::get('/get-rekap-quiz/{id}', [forumController::class, 'getRekapById']);
 
+    Route::get('/recomend', [HistoryController::class, 'getHistory']);
+    Route::post('/history/update', [HistoryController::class, 'setHistory']);
+
 });
 
 
@@ -125,8 +129,7 @@ Route::get('/get-rekap/{id_forum}', [forumController::class, 'getRekapByForumId'
 Route::get('/visited', [visitedController::class, 'newVisited']);
 Route::get('/visited/get', [visitedController::class, 'getAllVisited']);
 
-Route::get('/history/{id}', [UraianPanjangController::class, 'getSoalUraianPanjang']);
-Route::post('/history/update', [UraianPanjangController::class, 'getSoalUraianPanjang']);
+
 
 
 // Route::get('/test', function(){
