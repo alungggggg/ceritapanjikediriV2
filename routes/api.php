@@ -15,6 +15,8 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\visitedController;
 use App\Http\Controllers\UraianPanjangController;
 use App\Http\Controllers\uraianSingkatController;
+use App\Http\Controllers\artikelController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +66,13 @@ Route::get('/verify', [authController::class, 'forgotPasswordForm']); //x
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
+
+    // artikel
+    Route::get('/artikel', [artikelController::class, 'getArtikel']);
+    Route::post('/artikel', [artikelController::class, 'createArtikel'])->middleware('auth:sanctum');
+    Route::patch('/artikel/{id}', [artikelController::class, 'updateArtikel'])->middleware('auth:sanctum');
+    Route::delete('/artikel/{id}', [artikelController::class, 'deleteArtikel'])->middleware('auth:sanctum');
+
 
     // dongeng
     Route::post('/dongeng', [dongengController::class, 'createDongeng'])->middleware('auth:sanctum');
@@ -130,6 +139,7 @@ Route::get('/visited', [visitedController::class, 'newVisited']);
 Route::get('/visited/get', [visitedController::class, 'getAllVisited']);
 
 
+Route::get('/accuracy', [HistoryController::class, 'testTopKAccuracy']);
 
 
 // Route::get('/test', function(){

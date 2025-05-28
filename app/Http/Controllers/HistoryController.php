@@ -147,4 +147,88 @@ class HistoryController extends Controller
         }
         return $results;
     }
+
+    public function testTopKAccuracy(Request $request){
+        $k = $request->input('k', 5); // default top-100 jika tidak disediakan
+
+        // Ambil seluruh data history dari semua pengguna dengan relasi history
+        $users = User::with(['history'])->get();
+
+        // Persiapkan data training dan data test.
+        // Kita gunakan data history yang sudah terurut (misal berdasarkan waktu, jika tersedia).
+        // Jika pengguna memiliki <2 interaksi, maka tidak dipakai dalam pengujian.
+        $trainingData = [];
+        $testData = [];
+
+        foreach ($users as $user) {
+            $histories = $user->history->pluck('id_dongeng')->toArray();
+            if(count($histories) < 2) continue; // Skip jika tidak cukup data
+            // Asumsikan histori sudah terurut; ambil interaksi terakhir sebagai test
+            $testItem = array_pop($histories);
+            $trainingData[$user->id] = $histories; // simpan data training berbentuk array
+            $testData[$user->id] = $testItem;
+        }
+        // return response()->json([
+        //     "training_data" => $trainingData,
+        //     "test_data" => $testData
+        // ], 200);
+
+        // Gabungkan seluruh item unik (dongeng) dalam data training untuk membuat vector fitur
+        $dongengList = [];
+        foreach($trainingData as $userId => $histories) {
+            $dongengList = array_merge($dongengList, $histories);
+        }
+        $dongengList = array_values(array_unique($dongengList));
+
+        
+        // Buat vector untuk masing-masing pengguna berdasarkan data training
+        $userVectors = [];
+        foreach($trainingData as $userId => $histories) {
+            $userVectors[$userId] = array_map(function($dongeng) use ($histories){
+                return in_array($dongeng, $histories) ? 1 : 0;
+            }, $dongengList);
+        }
+
+        $hitCount = 0;
+        $totalUsers = count($userVectors);
+
+        // Untuk setiap pengguna, hitung rekomendasi Top-K menggunakan kemiripan dengan pengguna lain
+        foreach($userVectors as $userId => $targetVector){
+            $recommendScores = []; // menyimpan skor rekomendasi per item
+
+            foreach($userVectors as $otherId => $otherVector){
+                if($userId == $otherId) continue;
+                $sim = $this->cosineSimilarity($targetVector, $otherVector);
+                if($sim <= 0) continue; // lewati jika kemiripan nol atau negatif
+                // Ambil data training pengguna lain
+                $otherTraining = $trainingData[$otherId];
+                // Agregasi rekomendasi: tambahkan skor similarity untuk setiap item yang belum ada pada training pengguna target
+                foreach($otherTraining as $item){
+                    // Jika item sudah pernah dilihat oleh target, lewati
+                    if(in_array($item, $trainingData[$userId])) continue;
+                    if(!isset($recommendScores[$item])){
+                        $recommendScores[$item] = 0;
+                    }
+                    $recommendScores[$item] += $sim;
+                }
+            }
+            // Urutkan rekomendasi berdasarkan skor secara menurun
+            arsort($recommendScores);
+            // Ambil Top-K item rekomendasi
+            $topKItems = array_slice(array_keys($recommendScores), 0, $k);
+            // Cek apakah item test pengguna ada dalam rekomendasi Top-K
+            if(isset($testData[$userId]) && in_array($testData[$userId], $topKItems)){
+                $hitCount++;
+            }
+        }
+
+        $accuracy = $totalUsers > 0 ? $hitCount / $totalUsers : 0;
+
+        return response()->json([
+            "top_k" => $k,
+            "accuracy" => $accuracy,
+            "total_users" => $totalUsers,
+            "hit_count" => $hitCount
+        ], 200);
+    }
 }
