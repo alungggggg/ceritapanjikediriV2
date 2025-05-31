@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\artikelModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class artikelController extends Controller
 {
@@ -38,7 +39,18 @@ class artikelController extends Controller
     public function createArtikel(Request $request)
     {
         try {
-            $artikel = artikelModel::create($request->all());
+            $gambar = $request->file('gambar'); 
+            $destinationPath = 'artikel/';
+            $profileImage = date('YmdHis') . "." . $gambar->getClientOriginalExtension();
+            $gambar->move($destinationPath, $profileImage);
+
+            $artikel = artikelModel::create([
+                'artikel_link' => $request->artikel_link,
+                'judul' => $request->judul,
+                'gambar' => $profileImage,
+                'deskripsi' => $request->deskripsi,
+            ]);
+           
             return response()->json([
                 'success' => true,
                 'data' => $artikel
@@ -52,16 +64,33 @@ class artikelController extends Controller
     public function updateArtikel(Request $request, $id)
     {
         try {
-            $artikel = artikelModel::find($id);
-            if (!$artikel) {
+            $data = artikelModel::find($id);
+            if (!$data) {
                 return response()->json([
                     'message' => 'Artikel not found',
                 ], 404);
             }
-            $artikel->update($request->all());
+            $data->artikel_link = $request->artikel_link;
+            $data->judul = $request->judul;
+            $data->deskripsi = $request->deskripsi;
+            if($request->file("gambar"))
+            {
+                if (File::exists("artikel/" . $data['gambar'])) {
+                    File::delete("artikel/" . $data['gambar']);
+                }
+
+                $gambar = $request->file('gambar'); 
+                $destinationPath = 'artikel/';
+                $filename = date('YmdHis') . "." . $gambar->getClientOriginalExtension();
+                $gambar->move($destinationPath, $filename);
+
+                $data->gambar = $filename;
+            }
+            $data->save();
+
             return response()->json([
                 'success' => true,
-                'data' => $artikel
+                'data' => $data
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -72,13 +101,16 @@ class artikelController extends Controller
     public function deleteArtikel($id)
     {
         try {
-            $artikel = artikelModel::find($id);
-            if (!$artikel) {
+            $data = artikelModel::find($id);
+            if (File::exists("artikel/" . $data['gambar'])) {
+                File::delete("artikel/" . $data['gambar']);
+            }
+            if (!$data) {
                 return response()->json([
                     'message' => 'Artikel not found',
                 ], 404);
             }
-            $artikel->delete();
+            $data->delete();
             return response()->json([
                 'success' => true,
                 'message' => 'Artikel deleted successfully'

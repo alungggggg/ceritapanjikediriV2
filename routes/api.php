@@ -7,16 +7,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\newsController;
 use App\Http\Controllers\quizController;
+use App\Http\Controllers\soalController;
 use App\Http\Controllers\userController;
 use App\Http\Controllers\forumController;
 use App\Http\Controllers\pilganController;
+use App\Http\Controllers\artikelController;
 use App\Http\Controllers\dongengController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\nilaiController;
 use App\Http\Controllers\visitedController;
 use App\Http\Controllers\UraianPanjangController;
 use App\Http\Controllers\uraianSingkatController;
-use App\Http\Controllers\artikelController;
-
+use App\Models\nilaiModel;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,34 +66,48 @@ Route::post('/refresh-token', [authController::class, 'forgotPasswordForm']); //
 Route::get('/isvalidtoken/{token}', [authController::class, 'forgotPasswordForm']); //x
 Route::get('/verify', [authController::class, 'forgotPasswordForm']); //x
 
+// artikel
+Route::get('/artikel', [artikelController::class, 'getArtikel']);
+Route::post('/artikel', [artikelController::class, 'createArtikel']);
+Route::patch('/artikel/{id}', [artikelController::class, 'updateArtikel']);
+Route::delete('/artikel/{id}', [artikelController::class, 'deleteArtikel']);
+
+// soal
+Route::get('/soal', [soalController::class, 'getSoal']);
+Route::post('/soal', [soalController::class, 'createSoal']);
+Route::patch('/soal/{id}', [soalController::class, 'updateSoal']);
+Route::delete('/soal/{id}', [soalController::class, 'deleteSoal']);
+
+// nilai
+Route::get('/nilai', [nilaiController::class, 'getNilai']);
+Route::post('/nilai', [nilaiController::class, 'createNilai']);
+Route::patch('/nilai/{id}', [nilaiController::class, 'updateNilai']);
+Route::delete('/nilai/{id}', [nilaiController::class, 'deleteNilai']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    // artikel
-    Route::get('/artikel', [artikelController::class, 'getArtikel']);
-    Route::post('/artikel', [artikelController::class, 'createArtikel'])->middleware('auth:sanctum');
-    Route::patch('/artikel/{id}', [artikelController::class, 'updateArtikel'])->middleware('auth:sanctum');
-    Route::delete('/artikel/{id}', [artikelController::class, 'deleteArtikel'])->middleware('auth:sanctum');
+
+    // nilai
 
 
     // dongeng
-    Route::post('/dongeng', [dongengController::class, 'createDongeng'])->middleware('auth:sanctum');
-    Route::patch('/dongeng/{id}', [dongengController::class, 'updateDongeng'])->middleware('auth:sanctum');
-    Route::delete('/dongeng/{id}', [dongengController::class, 'deleteDongeng'])->middleware('auth:sanctum');
+    Route::post('/dongeng', [dongengController::class, 'createDongeng']);
+    Route::patch('/dongeng/{id}', [dongengController::class, 'updateDongeng']);
+    Route::delete('/dongeng/{id}', [dongengController::class, 'deleteDongeng']);
 
     // user
-    Route::get('/profile', [userController::class, 'profile'])->middleware('auth:sanctum');
-    Route::get('/profile/update/{id}', [userController::class, 'updateProfile'])->middleware('auth:sanctum');
-    Route::get('/users/{id}', [userController::class, 'getUserByID'])->middleware('auth:sanctum');; // admin
-    Route::get('/users', [userController::class, 'getUser'])->middleware('auth:sanctum');;
-    Route::post('/users', [userController::class, 'createUser'])->middleware('auth:sanctum');
-    Route::patch('/users/{id}', [userController::class, 'updateUser'])->middleware('auth:sanctum');
-    Route::delete('/users/{id}', [userController::class, 'deleteUser'])->middleware('auth:sanctum');
+    Route::get('/profile', [userController::class, 'profile']);
+    Route::get('/profile/update/{id}', [userController::class, 'updateProfile']);
+    Route::get('/users/{id}', [userController::class, 'getUserByID']); // admin
+    Route::get('/users', [userController::class, 'getUser']);
+    Route::post('/users', [userController::class, 'createUser']);
+    Route::patch('/users/{id}', [userController::class, 'updateUser']);
+    Route::delete('/users/{id}', [userController::class, 'deleteUser']);
 
     // news
-    Route::post('/news', [newsController::class, 'store'])->middleware('auth:sanctum');
-    Route::patch('/news', [newsController::class, 'update'])->middleware('auth:sanctum'); // admin
-    Route::delete('/news', [newsController::class, 'destroy'])->middleware('auth:sanctum'); // admin
+    Route::post('/news', [newsController::class, 'store']);
+    Route::patch('/news', [newsController::class, 'update']); // admin
+    Route::delete('/news', [newsController::class, 'destroy']); // admin
 
     // pilgan
     Route::post('/set-soal-pilgan', [pilganController::class, 'createSoalPilgan']);

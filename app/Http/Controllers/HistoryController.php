@@ -11,12 +11,17 @@ class HistoryController extends Controller
 {
     public function setHistory(Request $request){
         $id = Auth::id();
-        HistoryModel::updateOrInsert(
-            [
-                "id_user" => $id,
-                "id_dongeng" => $request->id_dongeng
-            ],
-        );
+        $dongengId = $request->id_dongeng;
+        $history = historyModel::
+            where('id_user', $id)
+            ->where('id_dongeng', $dongengId)
+            ->first();
+        if (!$history) {
+            $history = new historyModel();
+            $history->id_user = $id;
+            $history->id_dongeng = $dongengId;
+        }
+        $history->save();
 
         return response()->json(["message" => "success"], 200);
     }
