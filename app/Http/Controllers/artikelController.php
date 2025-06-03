@@ -48,6 +48,7 @@ class artikelController extends Controller
                 'artikel_link' => $request->artikel_link,
                 'judul' => $request->judul,
                 'gambar' => $profileImage,
+                'type' => $request->type,
                 'deskripsi' => $request->deskripsi,
             ]);
            
@@ -73,6 +74,7 @@ class artikelController extends Controller
             $data->artikel_link = $request->artikel_link;
             $data->judul = $request->judul;
             $data->deskripsi = $request->deskripsi;
+            $data->type = $request->type;
             if($request->file("gambar"))
             {
                 if (File::exists("artikel/" . $data['gambar'])) {
