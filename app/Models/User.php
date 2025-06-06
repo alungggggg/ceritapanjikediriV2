@@ -52,8 +52,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function history():HasMany
+    public function history(): HasMany
     {
         return $this->hasMany(historyModel::class, "id_user", "id");
     }
+
+    public function nilai(): HasMany
+    {
+        return $this->hasMany(nilaiModel::class, 'id_user', 'id');
+    }
+
 }

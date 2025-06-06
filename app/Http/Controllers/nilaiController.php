@@ -12,8 +12,8 @@ class nilaiController extends Controller
     public function getNilai(Request $request)
     {
         try {
-            if ($request->id) {
-                $nilai = nilaiModel::find($request->id);
+            if ($request->id_nilai) {
+                $nilai = nilaiModel::with(['artikel'])->find($request->id);
                 if (!$nilai) {
                     return response()->json([
                         'message' => 'Nilai not found',
@@ -24,27 +24,46 @@ class nilaiController extends Controller
                     'data' => $nilai
                 ], 200);
             }
-            if($request->id_artikel){
-                $nilai =  artikelModel::with('nilai')
+
+            if ($request->id_artikel) {
+                $artikel = artikelModel::with('nilai.user')
                     ->where('id', $request->id_artikel)
-                    ->get();
-                if ($nilai->isEmpty()) {
+                    ->first();
+
+                if (!$artikel) {
                     return response()->json([
-                        'message' => 'Nilai not found for the given article ID',
+                        'message' => 'Artikel not found',
                     ], 404);
                 }
+
+                return response()->json([
+                    'success' => true,
+                    'data' => $artikel
+                ], 200);
             }
-            $nilai = nilaiModel::all();
+
+
+
+            // Ambil semua nilai dengan data artikel & user
+            $artikel = artikelModel::with('nilai.user')->get();
+            if (!$artikel) {
+                return response()->json([
+                    'message' => 'Artikel not found',
+                ], 404);
+            }
+
             return response()->json([
-                'success' => true, 
-                'data' => $nilai
+                'success' => true,
+                'data' => $artikel
             ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Internal Server Error: ' . $e->getMessage(),
             ], 500);
         }
     }
+
 
     public function createNilai(Request $request)
     {

@@ -16,4 +16,13 @@ class nilaiModel extends Model
         'id_user',
         'id_artikel',
     ];
+    public function artikel()
+    {
+        return $this->belongsTo(ArtikelModel::class, 'id_artikel', 'id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id');
+    }
+
 }
