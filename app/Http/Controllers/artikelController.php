@@ -12,8 +12,8 @@ class artikelController extends Controller
     public function getArtikel(Request $request)
     {
         try {
-            if($request->id){
-                $artikel = artikelModel::find($request->id);
+            if ($request->id) {
+                $artikel = artikelModel::with('soal')->find($request->id);
                 if (!$artikel) {
                     return response()->json([
                         'message' => 'Artikel not found',
@@ -24,7 +24,8 @@ class artikelController extends Controller
                     'data' => $artikel
                 ], 200);
             }
-            $artikel = artikelModel::all();
+
+            $artikel = artikelModel::with('soal')->get();
             return response()->json([
                 'success' => true,
                 'data' => $artikel
