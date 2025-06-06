@@ -104,8 +104,8 @@ class artikelController extends Controller
     {
         try {
             $data = artikelModel::find($id);
-            if (File::exists("artikel/" . $data['gambar'])) {
-                File::delete("artikel/" . $data['gambar']);
+            if (File::exists("artikel/" . $data['image'])) {
+                File::delete("artikel/" . $data['image']);
             }
             if (!$data) {
                 return response()->json([
