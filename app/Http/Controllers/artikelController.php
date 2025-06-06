@@ -47,7 +47,7 @@ class artikelController extends Controller
             $artikel = artikelModel::create([
                 'artikel_link' => $request->artikel_link,
                 'judul' => $request->judul,
-                'gambar' => $profileImage,
+                'image' => $profileImage,
                 'type' => $request->type,
                 'deskripsi' => $request->deskripsi,
             ]);
@@ -77,8 +77,8 @@ class artikelController extends Controller
             $data->type = $request->type;
             if($request->file("gambar"))
             {
-                if (File::exists("artikel/" . $data['gambar'])) {
-                    File::delete("artikel/" . $data['gambar']);
+                if (File::exists("artikel/" . $data['image'])) {
+                    File::delete("artikel/" . $data['image']);
                 }
 
                 $gambar = $request->file('gambar'); 
@@ -86,7 +86,7 @@ class artikelController extends Controller
                 $filename = date('YmdHis') . "." . $gambar->getClientOriginalExtension();
                 $gambar->move($destinationPath, $filename);
 
-                $data->gambar = $filename;
+                $data->image = $filename;
             }
             $data->save();
 
