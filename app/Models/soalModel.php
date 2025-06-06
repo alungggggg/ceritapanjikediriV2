@@ -23,4 +23,9 @@ class soalModel extends Model
         'id_artikel',
         'score',
     ];
+    public function artikel()
+    {
+        return $this->belongsTo(ArtikelModel::class, 'id_artikel');
+    }
+
 }
