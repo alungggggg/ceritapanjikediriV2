@@ -40,7 +40,7 @@ class artikelController extends Controller
     public function createArtikel(Request $request)
     {
         try {
-            $gambar = $request->file('gambar'); 
+            $gambar = $request->file('gambar');
             $destinationPath = 'artikel/';
             $profileImage = date('YmdHis') . "." . $gambar->getClientOriginalExtension();
             $gambar->move($destinationPath, $profileImage);
@@ -52,7 +52,7 @@ class artikelController extends Controller
                 'type' => $request->type,
                 'deskripsi' => $request->deskripsi,
             ]);
-           
+
             return response()->json([
                 'success' => true,
                 'data' => $artikel
@@ -76,13 +76,12 @@ class artikelController extends Controller
             $data->judul = $request->judul;
             $data->deskripsi = $request->deskripsi;
             $data->type = $request->type;
-            if($request->file("gambar"))
-            {
+            if ($request->file("gambar")) {
                 if (File::exists("artikel/" . $data['image'])) {
                     File::delete("artikel/" . $data['image']);
                 }
 
-                $gambar = $request->file('gambar'); 
+                $gambar = $request->file('gambar');
                 $destinationPath = 'artikel/';
                 $filename = date('YmdHis') . "." . $gambar->getClientOriginalExtension();
                 $gambar->move($destinationPath, $filename);
@@ -105,23 +104,46 @@ class artikelController extends Controller
     {
         try {
             $data = artikelModel::find($id);
-            if (File::exists("artikel/" . $data['image'])) {
-                File::delete("artikel/" . $data['image']);
-            }
+
             if (!$data) {
                 return response()->json([
-                    'message' => 'Artikel not found',
+                    'message' => 'Artikel tidak ditemukan.',
                 ], 404);
             }
+
+            // Cek relasi soal
+            if ($data->soal()->count() > 0) {
+                return response()->json([
+                    'message' => 'Artikel masih memiliki soal terkait. Hapus soal terlebih dahulu.',
+                ], 400);
+            }
+
+            // Cek relasi nilai
+            if ($data->nilai()->count() > 0) {
+                return response()->json([
+                    'message' => 'Artikel masih memiliki nilai terkait. Hapus nilai terlebih dahulu.',
+                ], 400);
+            }
+
+            // Hapus file jika ada
+            if ($data->image && File::exists("artikel/" . $data->image)) {
+                File::delete("artikel/" . $data->image);
+            }
+
+            // Hapus artikel
             $data->delete();
+
             return response()->json([
                 'success' => true,
-                'message' => 'Artikel deleted successfully'
+                'message' => 'Artikel berhasil dihapus.'
             ], 200);
         } catch (\Exception $e) {
+            \Log::error('Gagal menghapus artikel: ' . $e->getMessage());
             return response()->json([
-                'message' => 'Internal Server Error: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan pada server.',
             ], 500);
         }
     }
+
+
 }
