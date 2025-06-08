@@ -12,8 +12,8 @@ class artikelController extends Controller
     public function getArtikel(Request $request)
     {
         try {
-            if($request->id){
-                $artikel = artikelModel::find($request->id);
+            if ($request->id) {
+                $artikel = artikelModel::with('soal')->find($request->id);
                 if (!$artikel) {
                     return response()->json([
                         'message' => 'Artikel not found',
@@ -24,7 +24,8 @@ class artikelController extends Controller
                     'data' => $artikel
                 ], 200);
             }
-            $artikel = artikelModel::all();
+
+            $artikel = artikelModel::with('soal')->get();
             return response()->json([
                 'success' => true,
                 'data' => $artikel
@@ -47,7 +48,7 @@ class artikelController extends Controller
             $artikel = artikelModel::create([
                 'artikel_link' => $request->artikel_link,
                 'judul' => $request->judul,
-                'gambar' => $profileImage,
+                'image' => $profileImage,
                 'type' => $request->type,
                 'deskripsi' => $request->deskripsi,
             ]);
@@ -77,8 +78,8 @@ class artikelController extends Controller
             $data->type = $request->type;
             if($request->file("gambar"))
             {
-                if (File::exists("artikel/" . $data['gambar'])) {
-                    File::delete("artikel/" . $data['gambar']);
+                if (File::exists("artikel/" . $data['image'])) {
+                    File::delete("artikel/" . $data['image']);
                 }
 
                 $gambar = $request->file('gambar'); 
@@ -86,7 +87,7 @@ class artikelController extends Controller
                 $filename = date('YmdHis') . "." . $gambar->getClientOriginalExtension();
                 $gambar->move($destinationPath, $filename);
 
-                $data->gambar = $filename;
+                $data->image = $filename;
             }
             $data->save();
 
@@ -104,8 +105,8 @@ class artikelController extends Controller
     {
         try {
             $data = artikelModel::find($id);
-            if (File::exists("artikel/" . $data['gambar'])) {
-                File::delete("artikel/" . $data['gambar']);
+            if (File::exists("artikel/" . $data['image'])) {
+                File::delete("artikel/" . $data['image']);
             }
             if (!$data) {
                 return response()->json([

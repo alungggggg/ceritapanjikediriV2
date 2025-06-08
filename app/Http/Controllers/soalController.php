@@ -37,7 +37,8 @@ class soalController extends Controller
                 }
                 
             }
-            $soal = soalModel::all();
+            $soal = soalModel::with('artikel')->get();
+
             return response()->json([
                 'success' => true,
                 'data' => $soal
