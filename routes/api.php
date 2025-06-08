@@ -100,7 +100,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/profile/update/{id}', [userController::class, 'updateProfile']);
     Route::get('/users/{id}', [userController::class, 'getUserByID']); // admin
     Route::get('/users', [userController::class, 'getUser']);
-    Route::post('/users', [userController::class, 'createUser']);
+    Route::post('/users', [userController::class, 'addUser']);
     Route::patch('/users/{id}', [userController::class, 'updateUser']);
     Route::delete('/users/{id}', [userController::class, 'deleteUser']);
 
